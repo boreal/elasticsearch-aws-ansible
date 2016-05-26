@@ -1,0 +1,20 @@
+---
+# create-ami/tasks/main.yml
+#- name: Gather ec2 facts
+#  ec2_facts:
+
+#- debug: var=ansible_ec2_instance_id
+
+- name: Create AMI
+  local_action:
+      module: ec2_ami
+      region: "{{ region }}"
+      instance_id: "{{ ec2_info.instance_ids[0] }}"
+      name: "webapp-ami-{{ fact_time }}"
+      wait: yes
+      state: present
+      tags:
+          Name: autogen_ami
+          role: template
+          env: production
+  register: ami

@@ -1,0 +1,18 @@
+---
+# delete-lc/tasks/main.yml
+
+- name: find launch configurations
+  lc_find:
+    region: "{{ region }}"
+    name_regex: "webapp-.*"
+    sort: yes
+    sort_end: 10
+  register: old_lc_result
+
+- name: delete launch configurations
+  ec2_lc:
+    region: "{{ region }}"
+    name: "{{ item.name }}"
+    state: absent
+  with_items: old_lc_result.results
+  ignore_errors: yes

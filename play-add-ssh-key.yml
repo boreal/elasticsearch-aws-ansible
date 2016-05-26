@@ -1,0 +1,21 @@
+---
+- hosts: "tag_env_prod"
+  gather_facts: true
+  user: "{{ login_user_debian }}"
+  become: true
+  become_method: sudo
+  become_user: root
+
+  vars:
+    users:
+    - name: admin
+      authorized:
+        - "{{ files }}/authorized_keys/{{ user_ssh_public_key }}"
+
+  tasks:
+  - name: Copy authorized_keys
+    authorized_key: user={{ item.0.name }} key="{{ lookup('file', item.1) }}"
+    with_subelements:
+     - "{{ users }}"
+     - authorized
+

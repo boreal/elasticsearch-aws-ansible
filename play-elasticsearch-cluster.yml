@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: set fact for time variable to use as part of the Name tag
+      set_fact:
+        fact_time: "{{ lookup('pipe', 'date \"+%Y%m%d%H%M%S\"') }}"
+  tags: [asg, terminate, instance, instance-ami]
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - instance-template
+  tags: [instance, instance-ami]
+
+- hosts: ami_build
+  user: "{{ login_user_debian }}"
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: true
+  roles:
+    - install-nginx
+    - common-packages
+
+- hosts: ami_build
+  user: "{{ login_user_debian }}"
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: true
+  vars:
+    users:
+    - name: admin
+      authorized:
+        - "{{ files }}/authorized_keys/{{ user_ssh_public_key }}"
+  tasks:
+  - name: Copy authorized_keys
+    authorized_key: user={{ item.0.name }} key="{{ lookup('file', item.1) }}"
+    with_subelements:
+      - "{{ users }}"
+      - authorized
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - create-ami
+    - create-lc
+    - create-elb
+    - create-asg
+  tasks:
+  - name: Refresh inventory
+    meta: refresh_inventory
+  tags: [ami, instance-ami]
+

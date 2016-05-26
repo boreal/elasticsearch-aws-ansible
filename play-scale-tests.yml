@@ -1,0 +1,9 @@
+---
+- hosts: "tag_env_prod"
+  gather_facts: true
+  user: "{{ login_user_debian }}"
+  become: true
+  become_method: sudo
+  become_user: root
+  roles:
+      - scale-tests

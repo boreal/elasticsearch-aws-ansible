@@ -1,0 +1,25 @@
+---
+timezone: "America/New York"
+region: us-east-1
+zone: us-east-1a
+keypair: my-keypair
+security_groups: my-sec-group
+instance_type: m4.xlarge
+instance_tag_template_name: "ami_build"
+instance_tag_template_role: template
+instance_tag_env: prod
+vpc_subnet_id: my_vpc
+delete_on_termination: true
+domain: example.com
+ami_ubuntu: ami-d05e75b8
+# jessie
+# ami_debian: ami-116d857a
+#
+# wheezy
+ami_debian: ami-e0efab88
+login_user_debian: admin
+login_user_ubuntu: ubuntu
+heka_package_url: "https://github.com/mozilla-services/heka/releases/download/v0.10.0/heka_0.10.0_amd64.deb"
+heka_package_name: "heka_0.10.0_amd64.deb"
+elastic_apt_repo: "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main"
+elastic_apt_key: "https://packages.elastic.co/GPG-KEY-elasticsearch"

@@ -1,0 +1,11 @@
+---
+- hosts: "tag_env_prod"
+  gather_facts: true
+  user: "{{ login_user_debian }}"
+  become: true
+  become_method: sudo
+  become_user: root
+
+  tasks:
+  - name: install elasticsearch 1.7.4
+    apt: name="elasticsearch=1.7.4" state=present update_cache=yes

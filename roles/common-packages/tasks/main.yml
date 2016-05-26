@@ -1,0 +1,43 @@
+---
+# common-packages/tasks/main.yml
+
+- name: Add apt keys required for elasticsearch
+  apt_key: url={{ elastic_apt_key }}
+  tags: [packages]
+
+- name: Add repos from elasticsearch
+  apt_repository: repo={{ elastic_apt_repo }}
+  tags: [packages]
+
+- name: Download heka package
+  get_url:
+    url="{{ heka_package_url }}"
+    dest="/var/tmp/{{ heka_package_name }}.deb"
+  tags: [packages]
+
+- name: Install heka
+  apt: deb="/var/tmp/{{ heka_package_name }}.deb"
+  tags: [packages]
+
+- name: Update the apt-get cache
+  apt: update_cache=yes
+  tags: [packages]
+
+- name: Install packages
+  action: apt pkg={{ item }} state=installed
+  with_items:
+    - tmux
+    - screen
+    - vim
+    - elasticsearch=1.7.4
+    - rsync
+    - parted
+    - openjdk-7-jre-headless
+    - curl
+    - bzip2
+    - less
+  tags: [packages]
+
+- name: Update all packages to the latest version
+  apt: upgrade=dist
+

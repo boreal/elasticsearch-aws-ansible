@@ -1,0 +1,29 @@
+---
+# instance-template/tasks/main.yml
+- name: create ec2 instance template
+  ec2:
+    region: "{{ region }}"
+    zone: "{{ zone }}"
+    key_name: "{{ keypair }}"
+    instance_type: "{{ instance_type }}"
+    instance_tags:
+        Name: "{{ instance_tag_template_name }}"
+        role: "{{ instance_tag_template_role }}"
+    image: "{{ ami_debian }}"
+    group: "{{ security_groups }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    wait: yes
+    count: 1
+  register: ec2_info
+
+- name: debug ouput for ec2_info
+  debug: var=ec2_info.instance_ids[0]
+
+- name: Add new instance to host group
+  add_host: name={{ item.public_ip }} groups={{ instance_tag_template_name }}
+  #add_host: name={{ item.public_dns_name }} groups={{ instance_group }} ec2_id={{ item.id }}
+  with_items: ec2_info.instances
+
+- name: Wait for SSH to come up indicating instance is booted
+  wait_for: host={{ item.public_dns_name }} port=22 delay=10 timeout=320 state=started
+  with_items: ec2_info.instances
