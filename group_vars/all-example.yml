@@ -1,4 +1,5 @@
 ---
+files: ./files
 timezone: "America/New York"
 region: us-east-1
 zone: us-east-1a
